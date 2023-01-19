@@ -8,51 +8,17 @@
 import os
 from datetime import time
 
+file = 'phones.txt'
 
 def clear_screen():
     os.system('cls')
 
-
-def search_data():
-    clear_screen()
-    while (True):
-        answer = input('Строка поиска(для выхода нажмите Enter)=>')
-        if answer == '':
-            return
-        result = []
-        with open('phones.txt', 'r', encoding='utf-8') as datafile:
+def file_open(file):
+    result = []
+    with open(file, 'r', encoding='utf-8') as datafile:
             for line in datafile:
                 result.append(line.strip('\n'))
-                result = list(filter(lambda line: answer in line, result))
-        for printdata in result:
-            output_data_string(printdata)
-
-
-def output_data_string(printdata):
-    parse_data = printdata.split(',')
-    print(f'{parse_data[0]}  {parse_data[1]}  {parse_data[2]}   {parse_data[3]}')
-
-def save_data_to_file(data_to_save):
-    data_to_save = ','.join(data_to_save) + '\n'
-    print(data_to_save)
-    with open('phones.txt', 'a', encoding='utf-8') as datafile:
-        datafile.write(data_to_save)
-
-
-def print_data():
-    count = 1
-    with open('phones.txt', 'r', encoding='utf-8') as datafile:
-        for line in datafile:
-            parse_data = line.replace("\n", "").split(',')
-            print(f'{count}: {parse_data[0]}  {parse_data[1]}  {parse_data[2]}   {parse_data[3]}')
-            count += 1
-    return count-1
-
-
-def data_export():
-    count = print_data()
-    input(f'Всего {count} записей. Enter для выхода. ')
-
+    return result             
 
 def data_import():
     while (True):
@@ -64,52 +30,94 @@ def data_import():
         data_to_save = [last_name, first_name, patronymic, phone_number]
         if '' in data_to_save:
             return
-        save_data_to_file(data_to_save)
+        data_to_save = ','.join(data_to_save)    
+        save(file,data_to_save)
 
+def save(file,data_to_save):
+    with open(file, 'a', encoding='utf-8') as datafile:
+        datafile.write(data_to_save + '\n')
 
-def data_dell():
+def data_export(file):
+    count = 1
+    with open(file, 'r', encoding='utf-8') as datafile:
+        for line in datafile:
+            parse_data = line.replace("\n", "").split(',')
+            print(f'{count}: {parse_data[0]}  {parse_data[1]}  {parse_data[2]}   {parse_data[3]}')
+            count+=1
+    input(f'Всего {count} записей. Enter для выхода. ')        
+
+def search(file):
     while (True):
-        answer = input('Введите параметр удаления полностью(для выхода нажмите Enter)=> ')
+        answer = input('Введите параметр поиска(для выхода нажмите Enter)=> ')
         if answer == '':
             return
         result = []
         temp = []
-        with open('phones.txt', 'r', encoding='utf-8') as datafile:
+        with open(file, 'r', encoding='utf-8') as datafile:
             for line in datafile:
                 result.append(line.strip('\n'))
-                if answer in line:
+                if answer.lower() in line.lower():
                     temp.append(line.strip('\n'))
+                 
             if len(temp) == 1:
-                delete = "".join(temp)
+                quest = "".join(temp)
+            elif len(temp) == 0:
+                print('Данные не найдены') 
+                continue   
             else:
                 print('Найдено несколько контактов с данными параметрами:')
                 count = 1
                 for item in temp:
                     print(f'{count}: {item}')
-                    count+=1
-                num = int(input('Введите номер контакта который необходимо удалить: '))    
+                    count+=1  
+                num = int(input('Введите номер контакта который необходим: ')) 
                 for i in range(len(temp)):
                     if i == num-1:
-                        delete = "".join(temp[i])
-        new = []
-        for line in result:
-            if line != delete:
-                new.append(line)       
-        with open('phones.txt', 'w', encoding='utf-8') as datafile:
-            for i in new:
-                datafile.write(i+'\n')
+                        quest = "".join(temp[i]) 
+        return quest                       
 
+def data_seach(file):
+    while(True):
+        print(search(file))
+        answer = input('(для выхода нажмите Enter)=> ')
+        if answer == '':
+            return
+        
+def dell(result,delete):
+    new = []
+    for line in result:
+        if line != delete:
+            new.append(line)
+    with open(file, 'w', encoding='utf-8') as datafile:
+        for i in new:
+            datafile.write(i+'\n')
+
+def data_dell(file):
+    result = file_open(file)
+    delete = search(file)
+    dell(result,delete)               
+
+def data_change(file):
+    change1 = ''.join(search(file)).split(',')
+    change = ','.join(change1)
+    dell(file_open(file),change)
+    print(f'{change1[0]} {change1[1]} {change1[2]} {change1[3]}')
+    phone = input('Введите новый номер телефона: ')
+    change1[3] = phone
+    temp = ','.join(change1)
+    save(file,temp)
+    
 
 if __name__ == '__main__':
-    menu = '''1 - Вывод данных\n2 - Добавление записи\n3 - Поиск\n4 - Удаление данных\n5- Выход'''
+    menu = '''1 - Показать все записи\n2 - Добавить новый контакт\n3 - Найти запись\n4 - Удалить контакт\n5 - Изменить номер телефона у контакта\n6 - Выход'''
     while (True):
         os.system("cls")
         print(menu)
-        answer = input('>:')
+        answer = input('=> ')
         match answer:
             case "1":
                 # вывод данных
-                data_export()
+                data_export(file)
 
             case "2":
                 # добавление данных
@@ -117,19 +125,22 @@ if __name__ == '__main__':
 
             case "3":
                 # поиск
-                search_data()
+                data_seach(file)
 
             case "4":
                 # удаление данных
-                data_dell()
+                data_dell(file)
 
             case "5":
+                # Изменить номер телефона у контакта
+                data_change(file)
+
+            case "6":
                 # выход
                 exit(0)
 
             case _:
                 print("неверный ввод")
                 time.sleep(3)
-
 
 
