@@ -8,7 +8,7 @@
 import os
 from datetime import time
 
-file = 'phones.txt'
+file = 'D:\Домашка Олеся\Homework_Python\Homework_6\phones.txt'
 
 def clear_screen():
     os.system('cls')
