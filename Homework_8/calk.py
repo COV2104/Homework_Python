@@ -63,16 +63,11 @@ def calculator(text):
         b = int(numbers[i+1])
         ch = operation[i]
         res = calc(a, b, ch)  
-        i+=1
-    
-    
-    print(numbers)
-    print(operation)  
-    print(res)           
+        i+=1 
+    return res           
 
 
-print(example_3)
-calculator(example_3)
+print(f"{example_3} = {calculator(example_3)}")
 
 # Уровень 4:
 # - Действия разделяются скобками
