@@ -79,7 +79,7 @@ def search(file):
 def data_seach(file):
     while(True):
         print(search(file))
-        answer = input('(для выхода нажмите Enter)=> ')
+        answer = input('(Enter)=> ')
         if answer == '':
             return
         
